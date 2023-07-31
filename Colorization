@@ -1,0 +1,31 @@
+import streamlit as st
+from deoldify import device
+from deoldify.visualize import *
+import warnings
+
+# Disable deoldify warnings
+warnings.filterwarnings("ignore", category=UserWarning, message=".*?Your .*? set is empty.*?")
+
+# Set up deoldify
+colorizer = get_image_colorizer(artistic=True)
+
+# Streamlit interface
+st.title("Image Colorization using DeOldify")
+
+# Upload black-and-white image
+uploaded_file = st.file_uploader("Upload a Black-and-White Image", type=["jpg", "jpeg", "png"])
+
+if uploaded_file is not None:
+    # Colorize the image
+    st.write("Colorizing...")
+    image = colorizer.get_transformed_image(uploaded_file, render_factor=10)
+    st.image(image, use_column_width=True, caption="Colorized Image")
+
+    # Allow users to adjust colorization settings
+    render_factor = st.slider("Adjust Colorization Intensity", 1, 30, 10)
+    if st.button("Recolorize"):
+        st.write("Recolorizing...")
+        image = colorizer.get_transformed_image(uploaded_file, render_factor=render_factor)
+        st.image(image, use_column_width=True, caption="Colorized Image")
+
+st.write("Note: The colorization process may take some time depending on the image size and intensity setting.")
